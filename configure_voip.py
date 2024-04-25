@@ -10,6 +10,7 @@ SERVER_CONFIGURATION = {
 USERNAME = ''
 SECRET = ''
 
+
 def configure_voip(db):
     conn = psycopg2.connect(
         dbname=db,
@@ -17,26 +18,26 @@ def configure_voip(db):
     cur = conn.cursor()
 
     for key, value in SERVER_CONFIGURATION.items():
-        cur.execute('''
-        SELECT count(*) FROM ir_config_parameter WHERE KEY = '{}';
-        '''.format(key))
+        cur.execute(f'''
+        SELECT count(*) FROM ir_config_parameter WHERE KEY = '{key}';
+        ''')
         if cur.fetchone()[0] > 0:
-            cur.execute('''
+            cur.execute(f'''
             UPDATE ir_config_parameter
-            SET value = '{}'
-            WHERE KEY = '{}';
-            '''.format(value, key))
+            SET value = '{value}'
+            WHERE KEY = '{key}';
+            ''')
         else:
-            cur.execute('''
+            cur.execute(f'''
             INSERT INTO ir_config_parameter(key, value)
-            VALUES ('{}', '{}');
-            '''.format(key, value))
+            VALUES ('{key}', '{value}');
+            ''')
 
-    cur.execute('''
+    cur.execute(f'''
         UPDATE res_users_settings
-        SET voip_username = '{}', voip_secret = '{}'
+        SET voip_username = '{USERNAME}', voip_secret = '{SECRET}'
         WHERE user_id = 2;
-        '''.format(USERNAME, SECRET))
+        ''')
 
     conn.commit()
     cur.close()
