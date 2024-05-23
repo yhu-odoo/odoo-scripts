@@ -1,11 +1,3 @@
-import psycopg2
-import re
-import sys
-ODOO_PATH = ''
-sys.path.append(ODOO_PATH)
-import odoo
-
-
 SERVER_CONFIGURATION = {
     'voip.wsServer': '',
     'voip.pbx_ip': '',
@@ -13,6 +5,14 @@ SERVER_CONFIGURATION = {
 }
 USERNAME = ''
 SECRET = ''
+ODOO_PATH = ''
+
+
+import psycopg2
+import re
+import sys
+sys.path.append(ODOO_PATH)
+import odoo
 
 
 def configure_voip(db):
