@@ -12,7 +12,7 @@ import psycopg2
 import re
 import sys
 sys.path.append(ODOO_PATH)
-import odoo
+from odoo.release import version
 
 
 def configure_voip(db):
@@ -21,8 +21,8 @@ def configure_voip(db):
         user="odoo")
     cur = conn.cursor()
 
-    version = re.match(r"[\d\.]+", odoo.release.version).group(0)
-    if version < "17.2":
+    v = re.match(r"[\d\.]+", version).group(0)
+    if v < "17.2":
         for key, value in SERVER_CONFIGURATION.items():
             cur.execute(f'''
             SELECT count(*) FROM ir_config_parameter WHERE KEY = '{key}';
