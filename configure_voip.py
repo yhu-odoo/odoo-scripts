@@ -21,7 +21,7 @@ def configure_voip(db):
         user="odoo")
     cur = conn.cursor()
 
-    v = re.match(r"[\d\.]+", version).group(0)
+    v = re.search(r"[\d\.]+", version).group(0)
     if v < "17.2":
         for key, value in SERVER_CONFIGURATION.items():
             cur.execute(f'''
