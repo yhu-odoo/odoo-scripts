@@ -6,6 +6,7 @@ SERVER_CONFIGURATION = {
 USERNAME = ''
 SECRET = ''
 ODOO_PATH = ''
+PSQL_USER = ''
 
 
 import psycopg2
@@ -18,7 +19,7 @@ from odoo.release import version
 def configure_voip(db):
     conn = psycopg2.connect(
         dbname=db,
-        user="odoo")
+        user=PSQL_USER)
     cur = conn.cursor()
 
     v = re.search(r"[\d\.]+", version).group(0)
