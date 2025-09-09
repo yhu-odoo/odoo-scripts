@@ -50,21 +50,39 @@ def configure_voip(db):
             SELECT id FROM voip_provider WHERE name = 'Default';
         ''')
         row = cur.fetchone()
+        include_transcription_policy = v >= "18.5"
         if row:
             provider_id = row[0]
-            cur.execute(f'''
-                UPDATE voip_provider SET
-                    name = 'Default',
-                    ws_server = '{SERVER_CONFIGURATION["voip.wsServer"]}',
-                    pbx_ip = '{SERVER_CONFIGURATION["voip.pbx_ip"]}',
-                    mode = '{SERVER_CONFIGURATION["voip.mode"]}'
-                WHERE id = {provider_id};
-            ''')
+            if include_transcription_policy:
+                cur.execute(f'''
+                    UPDATE voip_provider SET
+                        name = 'Default',
+                        ws_server = '{SERVER_CONFIGURATION["voip.wsServer"]}',
+                        pbx_ip = '{SERVER_CONFIGURATION["voip.pbx_ip"]}',
+                        mode = '{SERVER_CONFIGURATION["voip.mode"]}',
+                        transcription_policy = 'disabled'
+                    WHERE id = {provider_id};
+                ''')
+            else:
+                cur.execute(f'''
+                    UPDATE voip_provider SET
+                        name = 'Default',
+                        ws_server = '{SERVER_CONFIGURATION["voip.wsServer"]}',
+                        pbx_ip = '{SERVER_CONFIGURATION["voip.pbx_ip"]}',
+                        mode = '{SERVER_CONFIGURATION["voip.mode"]}'
+                    WHERE id = {provider_id};
+                ''')
         else:
-            cur.execute(f'''
-                INSERT INTO voip_provider (name, ws_server, pbx_ip, mode)
-                VALUES ('Default', '{SERVER_CONFIGURATION["voip.wsServer"]}', '{SERVER_CONFIGURATION["voip.pbx_ip"]}', '{SERVER_CONFIGURATION["voip.mode"]}');
-            ''')
+            if include_transcription_policy:
+                cur.execute(f'''
+                    INSERT INTO voip_provider (name, ws_server, pbx_ip, mode, transcription_policy)
+                    VALUES ('Default', '{SERVER_CONFIGURATION["voip.wsServer"]}', '{SERVER_CONFIGURATION["voip.pbx_ip"]}', '{SERVER_CONFIGURATION["voip.mode"]}', 'disabled');
+                ''')
+            else:
+                cur.execute(f'''
+                    INSERT INTO voip_provider (name, ws_server, pbx_ip, mode)
+                    VALUES ('Default', '{SERVER_CONFIGURATION["voip.wsServer"]}', '{SERVER_CONFIGURATION["voip.pbx_ip"]}', '{SERVER_CONFIGURATION["voip.mode"]}');
+                ''')
             cur.execute('''
                 SELECT id FROM voip_provider WHERE name = 'Default';
             ''')
